@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Boletim de Aproveitamento</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef2f7;
+      color: #151538;
+      padding: 24px;
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 20px;
+    }
+
+    .panel h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      color: #17175c;
+    }
+
+    .panel p {
+      margin: 0 0 20px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #555;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 13px;
+      margin: 14px 0 6px;
+      color: #17175c;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cfd5e1;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: Arial, Helvetica, sans-serif;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.35;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #17175c;
+      box-shadow: 0 0 0 3px rgba(23, 23, 92, 0.12);
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: #df001b;
+      color: white;
+    }
+
+    .secondary {
+      background: #17175c;
+      color: white;
+    }
+
+    .preview-wrap {
+      display: flex;
+      justify-content: center;
+      overflow: auto;
+      padding-bottom: 20px;
+    }
+
+    #boletim {
+      width: 768px;
+      height: 1086px;
+      background: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .top-blue {
+      height: 230px;
+      background: linear-gradient(180deg, #0a9be0 0%, #0587c7 100%);
+      position: relative;
+    }
+
+    .title-boletim {
+      position: absolute;
+      left: 18px;
+      top: 118px;
+      color: white;
+      font-weight: 900;
+      font-size: 77px;
+      letter-spacing: 1px;
+      line-height: 0.9;
+    }
+
+    .subtitle {
+      position: absolute;
+      left: 18px;
+      top: 244px;
+      color: #17175c;
+      font-weight: 900;
+      font-size: 39px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-box {
+      position: absolute;
+      right: -4px;
+      top: 126px;
+      width: 265px;
+      height: 130px;
+      background: #17175c;
+      border-radius: 65px 0 0 65px;
+      color: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .brand-top {
+      font-size: 38px;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+
+    .brand-place {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .student-info {
+      position: absolute;
+      left: 26px;
+      right: 23px;
+      top: 373px;
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 355px 1fr;
+      align-items: center;
+      gap: 21px;
+      margin-bottom: 13px;
+    }
+
+    .info-label {
+      background: #17175c;
+      color: white;
+      height: 48px;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 26px;
+      font-weight: 900;
+      font-size: 29px;
+    }
+
+    .info-value {
+      border-bottom: 5px solid #17175c;
+      min-height: 42px;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 8px 5px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #111;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .red-bar {
+      position: absolute;
+      left: 27px;
+      right: 23px;
+      height: 51px;
+      background: #df001b;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 29px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .bar-notas {
+      top: 579px;
+    }
+
+    .grades {
+      position: absolute;
+      left: 31px;
+      right: 42px;
+      top: 655px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 80px;
+      font-size: 25px;
+      color: #111;
+    }
+
+    .grade-row {
+      display: grid;
+      grid-template-columns: 1fr 92px;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+      min-height: 55px;
+    }
+
+    .grade-label {
+      line-height: 1.1;
+      font-size: 22px;
+      word-break: break-word;
+    }
+
+    .grade-box {
+      width: 92px;
+      height: 43px;
+      border: 2px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 25px;
+      font-weight: 700;
+      color: #111;
+      background: #fff;
+    }
+
+    .bar-comments {
+      top: 860px;
+    }
+
+    .comments-box {
+      position: absolute;
+      left: 25px;
+      right: 26px;
+      top: 915px;
+      height: 110px;
+      border: 4px solid #17175c;
+      border-radius: 31px;
+      padding: 16px 20px;
+      font-size: 22px;
+      line-height: 1.25;
+      color: #111;
+      overflow: hidden;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 980px) {
+      body {
+        padding: 14px;
+      }
+
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        position: static;
+      }
+
+      .preview-wrap {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="panel">
+      <h1>Gerador de Boletim</h1>
+      <p>Preencha os campos abaixo. A prévia será atualizada automaticamente. Depois, clique em gerar imagem.</p>
+
+      <label for="aluno">Nome do aluno</label>
+      <input id="aluno" type="text" placeholder="Ex.: Maria Silva" oninput="updatePreview()" />
+
+      <label for="nivel">Nível</label>
+      <input id="nivel" type="text" placeholder="Ex.: Basic 2" oninput="updatePreview()" />
+
+      <label for="professor">Professor(a)</label>
+      <input id="professor" type="text" placeholder="Ex.: Aline" oninput="updatePreview()" />
+
+      <label for="faltasMid">Número de faltas até a Prova MID/PARCIAL</label>
+      <input id="faltasMid" type="number" min="0" placeholder="Ex.: 2" oninput="updatePreview()" />
+
+      <label for="faltasFinal">Número de faltas até a Prova Final</label>
+      <input id="faltasFinal" type="number" min="0" placeholder="Ex.: 4" oninput="updatePreview()" />
+
+      <label for="provaMid">Resultado da Prova MID/PARCIAL</label>
+      <input id="provaMid" type="text" placeholder="Ex.: 8,5" oninput="updatePreview()" />
+
+      <label for="provaFinal">Prova final</label>
+      <input id="provaFinal" type="text" placeholder="Ex.: 9,0" oninput="updatePreview()" />
+
+      <label for="provaOral">Prova oral</label>
+      <input id="provaOral" type="text" placeholder="Ex.: 8,0" oninput="updatePreview()" />
+
+      <label for="mediaFinal">Média final</label>
+      <input id="mediaFinal" type="text" placeholder="Ex.: 8,5" oninput="updatePreview()" />
+
+      <label for="comentario">Comentários do professor(a)</label>
+      <textarea id="comentario" placeholder="Escreva aqui o comentário para os pais..." oninput="updatePreview()"></textarea>
+
+      <div class="buttons">
+        <button class="primary" onclick="downloadImage()">Gerar imagem PNG</button>
+        <button class="secondary" onclick="clearForm()">Limpar campos</button>
+      </div>
+    </section>
+
+    <section class="preview-wrap">
+      <div id="boletim">
+        <div class="top-blue">
+          <div class="title-boletim">BOLETIM</div>
+          <div class="brand-box">
+            <div class="brand-top">CCAA</div>
+            <div class="brand-place">Nova Lima</div>
+          </div>
+        </div>
+
+        <div class="subtitle">DE APROVEITAMENTO</div>
+
+        <div class="student-info">
+          <div class="info-row">
+            <div class="info-label">ALUNO</div>
+            <div class="info-value" id="previewAluno"></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">NÍVEL</div>
+            <div class="info-value" id="previewNivel"></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">PROFESSOR(A)</div>
+            <div class="info-value" id="previewProfessor"></div>
+          </div>
+        </div>
+
+        <div class="red-bar bar-notas">NOTAS E FREQUÊNCIA</div>
+
+        <div class="grades">
+          <div>
+            <div class="grade-row">
+              <div class="grade-label">Número de faltas até a Prova MID/PARCIAL</div>
+              <div class="grade-box" id="previewFaltasMid"></div>
+            </div>
+            <div class="grade-row">
+              <div class="grade-label">Número de faltas até a Prova Final</div>
+              <div class="grade-box" id="previewFaltasFinal"></div>
+            </div>
+            <div class="grade-row">
+              <div class="grade-label">Prova MID/PARCIAL</div>
+              <div class="grade-box" id="previewProvaMid"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="grade-row">
+              <div class="grade-label">Prova final</div>
+              <div class="grade-box" id="previewProvaFinal"></div>
+            </div>
+            <div class="grade-row">
+              <div class="grade-label">Prova oral</div>
+              <div class="grade-box" id="previewProvaOral"></div>
+            </div>
+            <div class="grade-row">
+              <div class="grade-label">Média final</div>
+              <div class="grade-box" id="previewMediaFinal"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="red-bar bar-comments">COMENTÁRIOS DO SEU PROFESSOR(A)</div>
+        <div class="comments-box" id="previewComentario"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function getValue(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function updatePreview() {
+      setText('previewAluno', getValue('aluno'));
+      setText('previewNivel', getValue('nivel'));
+      setText('previewProfessor', getValue('professor'));
+      setText('previewFaltasMid', getValue('faltasMid'));
+      setText('previewFaltasFinal', getValue('faltasFinal'));
+      setText('previewProvaMid', getValue('provaMid'));
+      setText('previewProvaFinal', getValue('provaFinal'));
+      setText('previewProvaOral', getValue('provaOral'));
+      setText('previewMediaFinal', getValue('mediaFinal'));
+      setText('previewComentario', getValue('comentario'));
+    }
+
+    async function downloadImage() {
+      const boletim = document.getElementById('boletim');
+      const aluno = getValue('aluno') || 'aluno';
+      const fileName = 'boletim-' + aluno.toLowerCase().replace(/[^a-z0-9áéíóúâêôãõç]+/gi, '-').replace(/^-|-$/g, '') + '.png';
+
+      const canvas = await html2canvas(boletim, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true
+      });
+
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function clearForm() {
+      const fields = ['aluno', 'nivel', 'professor', 'faltasMid', 'faltasFinal', 'provaMid', 'provaFinal', 'provaOral', 'mediaFinal', 'comentario'];
+      fields.forEach(id => document.getElementById(id).value = '');
+      updatePreview();
+    }
+  </script>
+</body>
+</html>
